@@ -171,7 +171,7 @@ const channel = rtm.subscribe('disrupt', RTM.SubscriptionMode.SIMPLE)
 
 channel.on("rtm/subscription/data", function(pdu) {
   pdu.body.messages.forEach(msg => {
-    if (msg.type === 'convaid') {
+    if (msg.type === 'convaid' && msg.event.currentIntent) {
       const intent = msg.event.currentIntent.slots
       const userId = msg.event.userId
 
