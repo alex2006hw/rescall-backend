@@ -1,0 +1,51 @@
+{
+	"type": "convaid", 
+	"event": {
+		"currentIntent": {
+			"slots": {
+				"action": "get", 
+				"measureunit": null, 
+				"resource": "water", 
+				"quantity": null
+			}, 
+			"confirmationStatus": "None", 
+			"name": "giveHelp", 
+			"slotDetails": {
+				"action": {
+					"originalValue": "donate", 
+					"resolutions": [
+						{"value": "donate"}
+					]
+				}, 
+				"measureunit": {
+					"originalValue": "gallons", 
+					"resolutions": [
+						{"value": "gallon"}
+					]
+				}, 
+				"resource": {
+					"originalValue": "water", 
+					"resolutions": [
+						{"value": "water"}
+					]
+				}, 
+				"quantity": {
+					"originalValue": null, 
+					"resolutions": []
+				}
+			}
+		}, 
+		"bot": {
+			"alias": null, 
+			"version": "4", 
+			"name": "donate"
+		}, 
+		"userId": "cj7ofzn4c0000gwzl10oyo2tk", 
+		"inputTranscript": "i need water",
+		"invocationSource": "FulfillmentCodeHook", 
+		"outputDialogMode": "Voice", 
+		"messageVersion": "1.0", 
+		"sessionAttributes": null
+	}
+}
+
