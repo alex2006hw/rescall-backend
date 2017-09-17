@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const RTM = require('satori-rtm-sdk')
 const cuid = require('cuid')
 const R = require('rambda')
-const { addDonation, addNeed, makeConfCall } = require('./helpers')
+const { addDonation, addNeed, makeConfCall, sendSMS } = require('./helpers')
 
 const FROM_NUMBER = '12016444271'
 let dashboard = {
@@ -22,15 +22,15 @@ let dashboard = {
     },
     {
       "name": "beds",
-      "value": 565,
+      "value": 65,
       "measureUnit": "Beds"
     }
   ],
   "Donations": {
-    "total": 5,
+    "total": 346,
     "list": [
       {
-        "from": "17863328464",
+        "from": "15101115555",
         "resource": "water",
         "quantity": 10,
         "measureUnit": "gallons"
@@ -44,16 +44,16 @@ let dashboard = {
     ]
   },
   "Needs": {
-    "total": 500,
+    "total": 508,
     "list": [
       {
-        "from": "17864690827",
+        "from": "15102228876",
         "resource": "water",
         "quantity": null,
         "measureUnit": null
       },
       {
-        "from": "12673939834",
+        "from": "15108876668",
         "resource": "bed",
         "quantity": 2,
         "measureUnit": "beds"
@@ -144,6 +144,18 @@ server.get('/confcall/:donor', (req, res) => {
 
 server.post('/confcall-events/:donor', (req, res) => {
   console.log('CONFCALL-EVENT: ' + req.url + ' => ' + JSON.stringify(req.body))
+  const body = req.body
+  const donor = req.params.donor
+
+  if (body.status === 'completed') {
+    const donations = R.filter(R.propEq('from', donor))(dashboard.Donations.list)
+
+    console.log(donations)
+    if (donations.length > 0) {
+      sendSMS(donor, donations[0])
+    }
+  }
+
   res.send()
 })
 
@@ -162,6 +174,28 @@ server.post('/event/:userId?', (req, res) => {
 server.listen(port, (err) => {
   if (err) throw err
   console.log(`> Ready on http://localhost:${port}`)
+})
+
+server.get('/incoming-sms', (req, res) => {
+  console.log(req.query)
+  const q = req.query
+
+  const donor = R.filter(R.propEq('from', q.msisdn))(dashboard.Donations.list)
+  console.log(donor)
+  if (donor.length > 0) {
+    const quantity = parseInt(q.text)
+
+    donor[0].quantity = quantity
+
+    const total = R.filter(R.propEq('name', donor[0].resource))(dashboard.totals)
+    if (total.length > 0) {
+      total[0].value = total[0].value - quantity
+    }
+
+    rtm.publish('disrupt', dashboard)
+  }
+
+  res.sendStatus(200)
 })
 
 

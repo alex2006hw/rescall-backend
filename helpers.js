@@ -1,14 +1,14 @@
 const R = require('rambda')
 const Nexmo = require('nexmo')
-require('dotenv')
+require('dotenv').config()
 
-const FROM_NUMBER = '12016444271'
+const FROM_NUMBER = process.env.RESCALL
 
 const nexmo = new Nexmo({
   apiKey: 'e3c2ffa0',
   apiSecret: '7c09b08a5485b207',
   applicationId: 'cad77659-5f21-468d-8cf7-6215b8ade67c',
-  privateKey: '/Users/ernestofreyre/Documents/nodeprojects/nexmo/rooted/private.key'
+  privateKey: './private.key'
 })
 
 module.exports.addDonation = (dashboard, msg) => {
@@ -82,3 +82,17 @@ module.exports.makeConfCall = msg => {
     }
   })
 }
+
+module.exports.sendSMS = (to, donation) => {
+  const nexmo = new Nexmo({
+    apiKey: 'e3c2ffa0',
+    apiSecret: '7c09b08a5485b207'
+  })
+
+  const from = FROM_NUMBER
+  const text = `Rescall here, how much ${donation.resource} do you have left? ${donation.measureUnit && `(in ${donation.measureUnit})`}`
+
+  console.log('SENDING SMS to ' + to + ' => ' + text)
+  nexmo.message.sendSms(from, to, text)
+}
+
