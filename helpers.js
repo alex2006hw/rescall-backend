@@ -17,7 +17,7 @@ module.exports.addDonation = (dashboard, msg) => {
   const quantity = (msg.intent.quantity && parseInt(msg.intent.quantity)) || 1
 
 
-  list.push({
+  list.splice(0, 0, {
     from: msg.from,
     resource: msg.intent.resource,
     quantity,
@@ -48,7 +48,7 @@ module.exports.addNeed = (dashboard, msg) => {
   const quantity = (msg.intent.quantity && parseInt(msg.intent.quantity)) || 1
 
 
-  list.push({
+  list.splice(0, 0, {
     from: msg.from,
     resource: msg.intent.resource,
     quantity,
