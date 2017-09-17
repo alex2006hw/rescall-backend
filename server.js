@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const RTM = require('satori-rtm-sdk')
@@ -95,17 +96,18 @@ server.get('/answer', (req, res) => {
       'action': 'connect',
       'endpoint': [
         {
-          'content-type': 'audio/l16rate=16000',
+          'content-type': 'audio/l16;rate=16000',
           'headers': {
-            'aws_key': 'AKIAIDAFIZEIGKK775AA',
-            'aws_secret': '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'
+            'aws_key': process.env.KEY,
+            'aws_secret': process.env.SECRET
           },
           'type': 'websocket',
+          // 'uri': `wss://sammachin.ngrok.io/bot/donate/alias/staging/user/1234/content`
           'uri': `wss://lex-us-east-1.nexmo.com/bot/donate/alias/staging/user/${userId}/content`
         }
       ],
       'eventUrl': [
-        `http://105d8588.ngrok.io/event/${userId}`
+        `${process.env.URL}/event/${userId}`
       ]
     }
   ]
@@ -123,8 +125,8 @@ server.get('/confcall/:donor', (req, res) => {
     {
       "action": "connect",
       "eventUrl": [
-        `http://651e479d.ngrok.io/confcall-events/${req.params.donor}`,
-        `http://651e479d.ngrok.io/confcall-backup/${req.params.donor}`,
+        `${process.env.URL}/confcall-events/${req.params.donor}`,
+        `${process.env.URL}/confcall-backup/${req.params.donor}`,
       ],
       "timeout": "45",
       "from": FROM_NUMBER,
@@ -149,7 +151,6 @@ server.post('/confcall-backup/:donor', (req, res) => {
   console.log('CONFCALL-BACKUP: ' + req.url + ' => ' + JSON.stringify(req.body))
   res.send()
 })
-
 
 server.post('/event/:userId?', (req, res) => {
   const body = req.body
@@ -235,7 +236,6 @@ rtm.on("data", function(pdu) {
     rtm.restart()
   }
 })
-
 
 rtm.on("enter-connected", function() {
   rtm.publish('disrupt', dashboard);

@@ -1,5 +1,6 @@
 const R = require('rambda')
 const Nexmo = require('nexmo')
+require('dotenv')
 
 const FROM_NUMBER = '12016444271'
 
@@ -71,7 +72,7 @@ module.exports.makeConfCall = msg => {
       number: msg.need
     }],
     answer_url: [
-      `http://651e479d.ngrok.io/confcall/${msg.donor}`
+      `${process.env.URL}/confcall/${msg.donor}`
     ]
   }, (error, response) => {
     if (error) {
