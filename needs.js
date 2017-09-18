@@ -6,7 +6,7 @@ const rtm = new RTM('wss://og3ayb2g.api.satori.com', 'D364dDfea10C2F3eede8e5DE92
 const needs = require('./mocks/need.json')
 
 rtm.on("enter-connected", function() {
-  rtm.publish('disrupt', needs)
+  rtm.publish('disrupt2017', needs)
   rtm.stop()
 })
 

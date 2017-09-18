@@ -6,6 +6,7 @@ const cuid = require('cuid')
 const R = require('rambda')
 const { addDonation, addNeed, makeConfCall, sendSMS } = require('./helpers')
 
+
 const FROM_NUMBER = '12016444271'
 let dashboard = {
   "type": "dashboard",
@@ -192,7 +193,7 @@ server.get('/incoming-sms', (req, res) => {
       total[0].value = total[0].value - quantity
     }
 
-    rtm.publish('disrupt', dashboard)
+    rtm.publish('disrupt2017', dashboard)
   }
 
   res.sendStatus(200)
@@ -201,10 +202,13 @@ server.get('/incoming-sms', (req, res) => {
 
 const rtm = new RTM('wss://og3ayb2g.api.satori.com', 'D364dDfea10C2F3eede8e5DE92e3A88B')
 
-const channel = rtm.subscribe('disrupt', RTM.SubscriptionMode.SIMPLE)
+const channel = rtm.subscribe('disrupt2017', RTM.SubscriptionMode.SIMPLE)
 
 channel.on("rtm/subscription/data", function(pdu) {
-  pdu.body.messages.forEach(msg => {
+
+  const m = [pdu.body.messages[pdu.body.messages.length - 1]]
+
+  m.forEach((msg, index) => {
     if (msg.type === 'convaid' && msg.event.currentIntent) {
       const intent = msg.event.currentIntent.slots
       const userId = msg.event.userId
@@ -213,10 +217,11 @@ channel.on("rtm/subscription/data", function(pdu) {
       const event = {
         type: 'call',
         from: call.from,
-        intent
+        intent,
+        index
       }
 
-      rtm.publish('disrupt', event);
+      rtm.publish('disrupt2017', event);
 
       return
     }
@@ -226,11 +231,11 @@ channel.on("rtm/subscription/data", function(pdu) {
       const action = msg.intent.action
       if (action === 'donate') {
         dashboard = addDonation(dashboard, msg)
-        rtm.publish('disrupt', dashboard)
+        rtm.publish('disrupt2017', dashboard)
       }
       if (action === 'get') {
         dashboard = addNeed(dashboard, msg)
-        rtm.publish('disrupt', dashboard)
+        rtm.publish('disrupt2017', dashboard)
 
         // Matching and conf call
         const quantity = (msg.intent.quantity && parseInt(msg.intent.quantity)) || 1
@@ -247,7 +252,7 @@ channel.on("rtm/subscription/data", function(pdu) {
             resource: msg.intent.resource,
             quantity
           }
-          rtm.publish('disrupt', confEvent)
+          rtm.publish('disrupt2017', confEvent)
         }
       }
       return
@@ -258,10 +263,6 @@ channel.on("rtm/subscription/data", function(pdu) {
 
       return
     }
-
-
-
-
   })
 })
 
@@ -272,7 +273,7 @@ rtm.on("data", function(pdu) {
 })
 
 rtm.on("enter-connected", function() {
-  rtm.publish('disrupt', dashboard);
+  rtm.publish('disrupt2017', dashboard);
 });
 
 rtm.start()

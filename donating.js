@@ -6,7 +6,7 @@ const rtm = new RTM('wss://og3ayb2g.api.satori.com', 'D364dDfea10C2F3eede8e5DE92
 const donating = require('./mocks/donating.json')
 
 rtm.on("enter-connected", function() {
-  rtm.publish('disrupt', donating)
+  rtm.publish('disrupt2017', donating)
   rtm.stop()
 })
 
